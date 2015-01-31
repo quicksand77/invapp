@@ -1,3 +1,22 @@
+--added 1/29/2015--
+
+InvApp Ideas
+ 
+1)      Add a dropdown menu for the firmware on the drac
+	a.       Go to dell.com and research all the available firmwares for 12g and 13g for the initial list
+	b.      Add a button that will allow them to add/remove/modify the items in the firmware list
+
+ 
+2)      Add a button to email a link to the web page
+	a.       Allow the user to input an email address
+ 
+3)      Add a button to allow the person to email a spreadsheet  (CSV file) of all the hardware in the database
+	a.       Allow the person to input an email address
+
+
+
+--------------------------------
+
 Description
 Finished application will be a web page that displays current inventory, has buttons to add, modify and delete entries and updates automatically. It contains an inventory of entrerprise hardware...
 
@@ -49,4 +68,5 @@ with open("/var/www/html/leases.html","w") as outFile:
             print("{:>15}".format(row[0]) + "{:>25}".format(row[3]) + " " + "{:>40}".format(row[8]))
             outFile.write("<tr>"+ "<td>"+"{:>15}".format(row[0]) +"</td>"  + "<td>"+"{:>25}".format(row[3]) + "</td>" + " " + "<td>" + "{:>40}".format(row[8] + "</td></tr>" + "\n"))
     outFile.write("</table>")
+
 
