@@ -1,5 +1,6 @@
 __author__ = 'root'
 from Tkinter import *
+from modules.valid_IP import *
 # from anydbm import *
 class InvForm:
     def __init__(self):
@@ -51,9 +52,10 @@ class InvForm:
         self.var.set('Server Model')
         serverModels = ['R610','R710','R720','R620','R630','R730XD']
         self.choices = serverModels
-        self.option = OptionMenu(self.root,self.var,*self.choices)
-        self.option.config(width=13)
-        self.option.grid(row=0,column=2)
+        # I think you can put all 3 lines on one line, more readable (JN)
+        self.option = OptionMenu(self.root,self.var,*self.choices).grid(row=0, column=2, columnspan=2)
+        # self.option.config(width=13)
+        # self.option.grid(row=0,column=2)
 
         self.root.mainloop()
     def closeFunc(self):
