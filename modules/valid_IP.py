@@ -2,16 +2,9 @@ __author__ = 'jeff'
 import ipaddress
 
 class CheckIP:
-
-    def checkip(self):
-        addr = raw_input("Please enter a valid IP address: \n")
+    def checkip(self,ip):
         try:
-            ipaddress.ip_address(addr)
-            print "success"
+            ipaddress.ip_address(ip)
+            return True
         except:
-            print "Please enter a valid IP address"
-            self.checkip()
-
-if __name__ == "__main__":
-    verify = CheckIP()
-    verify.checkip()
+            return False

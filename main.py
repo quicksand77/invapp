@@ -4,6 +4,7 @@ from modules.valid_IP import *
 # from anydbm import *
 class InvForm:
     def __init__(self):
+        self.validateIP = CheckIP()
         self.root = Tk()
         self.root.title("Inventory Application Form")
         self.choices = []
@@ -155,24 +156,25 @@ class InvForm:
             self.numProcEntry.insert(0,"requires integer")
     def writeIPdracAddress(self):
         try:
-            assert int(self.IPdracEntry.get())
+            assert self.validateIP.checkip(self.IPdracEntry.get())
             val1 = self.IPdracEntry.get()
             print val1
         except Exception as invalid:
+            print invalid
             self.IPdracEntry.delete(0,END)
-            self.IPdracEntry.insert(0,"requires ip address")
+            self.IPdracEntry.insert(0,"requires ipv4/ipv6")
     def writeIPaddress1(self):
         try:
-            assert int(self.ip1Entry.get())
+            assert self.validateIP.checkip(self.ip1Entry.get())
         except Exception as invalid:
             self.ip1Entry.delete(0,END)
-            self.ip1Entry.insert(0,"requires ip address")
+            self.ip1Entry.insert(0,"requires ipv4/ipv6")
     def writeIPaddress2(self):
         try:
-            assert int(self.ip2Entry.get())
+            assert self.validateIP.checkip(self.ip2Entry.get())
         except Exception as invalid:
             self.ip2Entry.delete(0,END)
-            self.ip2Entry.insert(0,"requires ip address")
+            self.ip2Entry.insert(0,"requires ipv4/ipv6")
     def serverAdd(self):
         if self.serverAddEntry.get() != "":
             server = self.serverAddEntry.get()
