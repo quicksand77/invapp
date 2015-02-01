@@ -178,9 +178,7 @@ class InvForm:
             server = self.serverAddEntry.get()
             self.serverAddEntry.delete(0,END)
             self.choices.insert(0,server)
-            self.serverOption = OptionMenu(self.informationFrame,self.serverString,*self.choices)
-            self.serverOption.config(width=14)
-            self.serverOption.grid(row=0, column=1, columnspan=2)
+            self.redrawServerList()
     def serverDelete(self):
         server = self.serverDeleteString.get()
         try:
