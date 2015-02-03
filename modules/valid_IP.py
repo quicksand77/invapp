@@ -16,10 +16,9 @@ if __name__ == "__main__":
     localCheck = CheckIP()
     testIP = raw_input("please enter an IP address for me to check: \n")
     print localCheck.checkip(testIP)
-    yesno = "yes"
-    yesno = raw_input("repeat?(yes/no)\n")
-    while yesno == "yes":
-        testIP = raw_input("please enter an IP address for me to check: \n")
+    while testIP != "quit":
+        testIP = raw_input("please enter an IP address for me to check('quit' to exit): \n")
+        if testIP == 'quit':
+            continue
         print localCheck.checkip(testIP)
-        yesno = raw_input("repeat?(yes/no)\n")
     print "closed IP checker"

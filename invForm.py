@@ -100,6 +100,7 @@ class InvForm:
         self.root.destroy()
     def applyFunc(self):
         newTitle = "Server is %s." % self.serverString.get()
+        self.serverString.get()
         self.writeNumHDDentry()
         self.writeSizeHDDentry()
         self.writeMemEntry()
@@ -125,7 +126,6 @@ class InvForm:
         self.firmwareString.set('Firmware Version')
     def writeNumHDDentry(self):
         try:
-            print self.numHDDentry.get()
             assert int(self.numHDDentry.get())
             val1 = self.numHDDentry.get()
             return val1
