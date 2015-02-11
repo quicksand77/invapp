@@ -1,6 +1,5 @@
 __author__ = 'quicksand77'
 __author__ = 'jeff'
-
 import sqlite3
 import os
 # from datetime import time, date, datetime
@@ -28,8 +27,6 @@ class DataDB:
             self.__cur = self.__conn.cursor()
 
         self.__wasOpened = True
-
-
     def create(self):
         print "creating database table 'serverTable'"
         createTable = """CREATE TABLE serverTable(
@@ -40,21 +37,17 @@ class DataDB:
                          description VARCHAR, updated_at TIME)"""
         self.__cur.execute(createTable)
         self.__conn.commit()
-
-
-    def insert(self,id,serverModel,firmwareVersion,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description,hrformat):
-        now = time.strftime("%c")
+    def insert(self,id,serverModel,firmwareVersion,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description):
+        # now = time.strftime("%c")
         try:
-            r = (id,serverModel,firmwareVersion,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description,now)
+            r = (id,serverModel,firmwareVersion,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description)
             self.__cur.execute('INSERT INTO serverTable VALUES (?,?,?,?,?,?,?,?,?,?,?,?)', r)
             self.__conn.commit()
         # except Exception as e:
         #     print str(e)
         except:
-            self.update(id,hrformat)
-
-
-    def update(self,id,serverModel,firmwareVersion,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description,hrformat):
+            self.update(id,serverModel,firmwareVersion,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description)
+    def update(self,id,serverModel,firmwareVersion,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description):
         # now = time.strftime("%c")
         s1 = (serverModel, id)
         s2 = (firmwareVersion, id)
@@ -66,7 +59,7 @@ class DataDB:
         s8 = (ip1,id)
         s9 = (ip2,id)
         s10 = (description,id)
-        v = (hrformat, id)
+        # v = (hrformat, id)
         # n = (now, id)
         self.__cur.execute('UPDATE serverTable SET serverModel = ? WHERE ID = ?',s1)
         self.__cur.execute('UPDATE serverTable SET firmwareVersion = ? WHERE ID = ?',s2)
@@ -78,20 +71,27 @@ class DataDB:
         self.__cur.execute('UPDATE serverTable SET ip1 = ? WHERE ID = ?',s8)
         self.__cur.execute('UPDATE serverTable SET ip2 = ? WHERE ID = ?',s9)
         self.__cur.execute('UPDATE serverTable SET description = ? WHERE ID = ?',s10)
-        self.__cur.execute('UPDATE serverTable SET hrformat = ? WHERE ID = ?', v )
+        # self.__cur.execute('UPDATE serverTable SET hrformat = ? WHERE ID = ?', v )
         # self.__cur.execute('UPDATE clockdb SET updated_at = ? WHERE ID = ?', n)
         self.__conn.commit()
-
-
     def read(self, id):
         t = (id,)
+        if id == "a":
+            print "here1"
+            for row in self.__cur.execute('SELECT * FROM serverTable'):
+                print "here2"
+                print row[1]
+        id = 0
+        t = (id,)
+        value = self.__cur.execute('SELECT * FROM serverTable WHERE ID = ?', t)
+        print value
         # print("Currently configured clocks")
         # for row in self.__cur.execute('SELECT * FROM clockdb'):
         #     print(row)
-
-        for row in self.__cur.execute('SELECT * FROM serverTable WHERE ID = ?', t):
-            # print("Current default setting for clock # %s is %s" % (row[0], row[1]))
-            return row[1]
+        # if id == 0:
+        #     for row in self.__cur.execute('SELECT * FROM serverTable WHERE ID = ?', t):
+        #         # print("Current default setting for clock # %s is %s" % (row[0], row[1]))
+        #         return row[1]
 
         # value = self.__cur.execute('SELECT * FROM clockdb WHERE ID = ?', t)
         # print(value)
@@ -114,7 +114,5 @@ class DataDB:
                 # print("Last updated at: %s "% str(row[2]))
                 print("Clock #%s --> 12 hour format, last updated %s "% (row[0], str(row[2])))
 '''
-
-
 if __name__ == "__main__":
     print("Please launch using 'main.py")

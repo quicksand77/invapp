@@ -4,6 +4,9 @@ from modules.valid_IP import *
 from DataDB import *
 class InvForm:
     def __init__(self):
+        dbConnection = DataDB()
+        self.__dbConnection = dbConnection
+        dbConnection.open("serverTable.db")
         self.validateIP = CheckIP()
         self.root = Tk()
         self.root.title("Inventory Application Form")
@@ -17,7 +20,10 @@ class InvForm:
         self.drawServerAdd()
         self.drawFirmwareDelete()
         self.drawFirmwareAdd()
+        self.b123 = Button(self.root,text = "showdata",command=self.readDatabase).grid(row=10,column=3)
         self.root.mainloop()
+    def readDatabase(self):
+        self.read = self.__dbConnection.read("a")
     def drawEntries(self):
         self.informationFrame = Frame(bd=3,relief=RIDGE,padx=10)
         self.informationFrame.grid(row=1,column=0,rowspan=7,columnspan=2)
@@ -107,8 +113,8 @@ class InvForm:
         self.firmwareAddLabel = Label(self.firmwareAddFrame,text="Add Firmware Version").grid(row=0,column=0)
         self.firmwareAddEntry = Entry(self.firmwareAddFrame)
         self.firmwareAddEntry.grid(row=1,column=0)
-        self.firmwareAddButton = Button(self.firmwareAddFrame,text="Add Firmware",command=self.serverAdd,width=16,padx=2).grid(row=2,column=0)
-        self.redrawFirmwareList("a")
+        self.firmwareAddButton = Button(self.firmwareAddFrame,text="Add Firmware",command=self.firmwareAdd,width=16,padx=2).grid(row=2,column=0)
+        # self.redrawFirmwareList("a")
     def drawFirmwareDelete(self):
         self.firmwareDeleteFrame = Frame(bd=3,relief=RIDGE)
         self.firmwareDeleteFrame.grid(row=3,column=4,rowspan=3)
@@ -120,7 +126,7 @@ class InvForm:
         self.firmwareDeleteOption.config(width=14)
         self.firmwareDeleteOption.grid(row=1, column=0)
         self.firmwareDeleteButton = Button(self.firmwareDeleteFrame,text="Delete firmware",command=self.firmwareDelete,width=16,padx=2).grid(row=2,column=0)
-        self.redrawFirmwareList("a")
+        # self.redrawFirmwareList("a")
     def closeFunc(self):
         print "Thank you for using the Inventory Application Form"
         self.root.destroy()
@@ -139,9 +145,35 @@ class InvForm:
         s10 = self.getIPaddress2()
         s11 = self.getDescriptionEntry()
         print s1,",",s2,",",s3,",",s4,",",s5,",",s6,",",s7,",",s8,",",s9,",",s10,",",s11
-        self.WRITE(s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11)
+        if None or "" in (s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11):
+            self.confirmApply()
+        else:
+            self.WRITE(s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11)
         # color = self.serverString.get()
         # self.root['bg'] = color
+    def confirmApply(self):
+        self.applyBox = Toplevel()
+        self.applyBox.title("Confirm write to database?")
+        b1 = Button(self.applyBox,width=20,text="yes",command=self.confirmApplyYes)
+        b1.pack()
+        b2 = Button(self.applyBox,width=20,text="no",command=self.confirmApplyNo)
+        b2.pack()
+    def confirmApplyYes(self):
+        s1 = self.getServiceTagEntry()
+        s2 = self.serverString.get()
+        s3 = self.firmwareString.get()
+        s4 = self.getNumHDDEntry()
+        s5 = self.getSizeHDDEntry()
+        s6 = self.getMemEntry()
+        s7 = self.getNumProcEntry()
+        s8 = self.getDracIPaddress()
+        s9 = self.getIPaddress1()
+        s10 = self.getIPaddress2()
+        s11 = self.getDescriptionEntry()
+        self.WRITE(s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11)
+        self.confirmApplyNo()
+    def confirmApplyNo(self):
+        self.applyBox.destroy()
     def clearFunc(self):
         # self.add.select()
         self.numHDDentry.delete(0,END)
@@ -191,7 +223,10 @@ class InvForm:
         try:
             assert self.validateIP.checkip(self.IPdracEntry.get())
             val1 = self.IPdracEntry.get()
-            return val1
+            if val1 == None or 'requires ipv4/ipv6':
+                return None
+            else:
+                return val1
         except Exception as invalid:
             print invalid
             self.IPdracEntry.delete(0,END)
@@ -200,7 +235,10 @@ class InvForm:
         try:
             assert self.validateIP.checkip(self.ip1Entry.get())
             val1 = self.ip1Entry.get()
-            return val1
+            if val1 == None or 'requires ipv4/ipv6':
+                return None
+            else:
+                return val1
         except Exception as invalid:
             self.ip1Entry.delete(0,END)
             self.ip1Entry.insert(0,"requires ipv4/ipv6")
@@ -208,7 +246,10 @@ class InvForm:
         try:
             assert self.validateIP.checkip(self.ip2Entry.get())
             val1 = self.ip2Entry.get()
-            return val1
+            if val1 == None or 'requires ipv4/ipv6':
+                return None
+            else:
+                return val1
         except Exception as invalid:
             self.ip2Entry.delete(0,END)
             self.ip2Entry.insert(0,"requires ipv4/ipv6")
@@ -217,7 +258,10 @@ class InvForm:
         return description
     def getServiceTagEntry(self):
         servicetag = self.serviceTagEntry.get()
-        return servicetag
+        if servicetag == '':
+            return None
+        else:
+            return servicetag
     def serverAdd(self):
         if self.serverAddEntry.get() != "":
             server = self.serverAddEntry.get()
@@ -275,11 +319,12 @@ class InvForm:
             self.firmwareString.set(self.serverFirmware()+'firm')
     def serverFirmware(self):
         return self.serverString.get()
+    def getID(self):
+        return self.serviceTagEntry.get()
     def WRITE(self,serviceTag,model,firmware,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description):
-        dbConnection = DataDB()
-        self.__dbConnection = dbConnection
         try:
-            dbConnection.open("serverTable.db")
-            serviceTag = self.__dbConnection.read(self.getID())
+            self.__dbConnection.open("serverTable.db")
+            self.__dbConnection.read(serviceTag)
+            self.__dbConnection.insert(serviceTag,model,firmware,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description)
         except Exception as e:
             print e
