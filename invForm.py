@@ -1,13 +1,20 @@
 __author__ = 'quicksand77'
+import os
 from Tkinter import *
 from modules.valid_IP import *
 from DataDB import *
 class InvForm:
     def __init__(self):
+        #database
         dbConnection = DataDB()
         self.__dbConnection = dbConnection
-        dbConnection.open("serverTable.db")
+        try:
+            dbConnection.open("serverTable.db")
+        except Exception as e:
+            print e
         self.validateIP = CheckIP()
+
+        #
         self.root = Tk()
         self.root.title("Inventory Application Form")
         self.root.resizable(width=False, height=False)
@@ -131,8 +138,19 @@ class InvForm:
         print "Thank you for using the Inventory Application Form"
         self.root.destroy()
     def applyFunc(self):
-        newTitle = "Server is %s." % self.serverString.get()
-        self.root.title(newTitle)
+
+        ss1 = self.serviceTagEntry.get()
+        ss2 = self.serverString.get()
+        ss3 = self.firmwareString.get()
+        ss4 = self.numHDDentry.get()
+        ss5 = self.sizeHDDentry.get()
+        ss6 = self.memEntry.get()
+        ss7 = self.numProcEntry.get()
+        ss8 = self.IPdracEntry.get()
+        ss9 = self.ip1Entry.get()
+        ss10 = self.ip2Entry.get()
+        ss11 = self.descriptionEntry.get()
+
         s1 = self.getServiceTagEntry()
         s2 = self.serverString.get()
         s3 = self.firmwareString.get()
@@ -144,38 +162,42 @@ class InvForm:
         s9 = self.getIPaddress1()
         s10 = self.getIPaddress2()
         s11 = self.getDescriptionEntry()
-        print s1,",",s2,",",s3,",",s4,",",s5,",",s6,",",s7,",",s8,",",s9,",",s10,",",s11
-        if None or "" in (s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11):
+        # print s1,",",s2,",",s3,",",s4,",",s5,",",s6,",",s7,",",s8,",",s9,",",s10,",",s11
+        if "" in (s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11):
             self.confirmApply()
         else:
-            self.WRITE(s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11)
-        # color = self.serverString.get()
-        # self.root['bg'] = color
+            newTitle = "Server is %s." % self.serverString.get()
+            self.root.title(newTitle)
+            self.WRITE(ss1,ss2,ss3,ss4,ss5,ss6,ss7,ss8,ss9,ss10,ss11)
     def confirmApply(self):
         self.applyBox = Toplevel()
-        self.applyBox.title("Confirm write to database?")
-        b1 = Button(self.applyBox,width=20,text="yes",command=self.confirmApplyYes)
-        b1.pack()
-        b2 = Button(self.applyBox,width=20,text="no",command=self.confirmApplyNo)
-        b2.pack()
+        self.applyBox.geometry("%dx%d%+d%+d" % (190, 50, 250, 125))
+        self.applyBox.title("Warning")
+        ask = Label(self.applyBox,text="There are empty fields! Continue?").grid(row=0,column=0)
+        b1 = Button(self.applyBox,width=12,text="yes",command=self.confirmApplyYes)
+        b1.grid(row=1,column=0,sticky=W)
+        b2 = Button(self.applyBox,width=11,text="no",command=self.confirmApplyNo)
+        b2.grid(row=1,column=0,sticky=E)
     def confirmApplyYes(self):
-        s1 = self.getServiceTagEntry()
-        s2 = self.serverString.get()
-        s3 = self.firmwareString.get()
-        s4 = self.getNumHDDEntry()
-        s5 = self.getSizeHDDEntry()
-        s6 = self.getMemEntry()
-        s7 = self.getNumProcEntry()
-        s8 = self.getDracIPaddress()
-        s9 = self.getIPaddress1()
-        s10 = self.getIPaddress2()
-        s11 = self.getDescriptionEntry()
-        self.WRITE(s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11)
+        ss1 = self.serviceTagEntry.get()
+        ss2 = self.serverString.get()
+        ss3 = self.firmwareString.get()
+        ss4 = self.numHDDentry.get()
+        ss5 = self.sizeHDDentry.get()
+        ss6 = self.memEntry.get()
+        ss7 = self.numProcEntry.get()
+        ss8 = self.IPdracEntry.get()
+        ss9 = self.ip1Entry.get()
+        ss10 = self.ip2Entry.get()
+        ss11 = self.descriptionEntry.get()
+        self.WRITE(ss1,ss2,ss3,ss4,ss5,ss6,ss7,ss8,ss9,ss10,ss11)
+        newTitle = "Server is %s." % self.serverString.get()
+        self.root.title(newTitle)
         self.confirmApplyNo()
     def confirmApplyNo(self):
         self.applyBox.destroy()
     def clearFunc(self):
-        # self.add.select()
+        self.root.title("Inventory Application Form")
         self.numHDDentry.delete(0,END)
         self.sizeHDDentry.delete(0,END)
         self.memEntry.delete(0,END)
@@ -194,7 +216,8 @@ class InvForm:
             return val1
         except Exception as invalid:
             self.numHDDentry.delete(0,END)
-            self.numHDDentry.insert(0,"requires integer")
+            return ""
+            # self.numHDDentry.insert(0,"requires integer")
     def getSizeHDDEntry(self):
         try:
             assert int(self.sizeHDDentry.get())
@@ -202,7 +225,8 @@ class InvForm:
             return val1
         except Exception as invalid:
             self.sizeHDDentry.delete(0,END)
-            self.sizeHDDentry.insert(0,"requires integer")
+            return ""
+            # self.sizeHDDentry.insert(0,"requires integer")
     def getMemEntry(self):
         try:
             assert int(self.memEntry.get())
@@ -210,7 +234,8 @@ class InvForm:
             return val1
         except Exception as invalid:
             self.memEntry.delete(0,END)
-            self.memEntry.insert(0,"requires integer")
+            return ""
+            # self.memEntry.insert(0,"requires integer")
     def getNumProcEntry(self):
         try:
             assert int(self.numProcEntry.get())
@@ -218,50 +243,47 @@ class InvForm:
             return val1
         except Exception as invalid:
             self.numProcEntry.delete(0,END)
-            self.numProcEntry.insert(0,"requires integer")
+            return ""
+            # self.numProcEntry.insert(0,"requires integer")
     def getDracIPaddress(self):
         try:
             assert self.validateIP.checkip(self.IPdracEntry.get())
             val1 = self.IPdracEntry.get()
-            if val1 == None or 'requires ipv4/ipv6':
-                return None
-            else:
-                return val1
+            return val1
         except Exception as invalid:
-            print invalid
+            # print invalid
             self.IPdracEntry.delete(0,END)
-            self.IPdracEntry.insert(0,"requires ipv4/ipv6")
+            return ""
+            # self.IPdracEntry.insert(0,"requires ipv4/ipv6")
     def getIPaddress1(self):
         try:
             assert self.validateIP.checkip(self.ip1Entry.get())
             val1 = self.ip1Entry.get()
-            if val1 == None or 'requires ipv4/ipv6':
-                return None
-            else:
-                return val1
+            return val1
         except Exception as invalid:
             self.ip1Entry.delete(0,END)
-            self.ip1Entry.insert(0,"requires ipv4/ipv6")
+            return ""
+            # self.ip1Entry.insert(0,"requires ipv4/ipv6")
     def getIPaddress2(self):
         try:
             assert self.validateIP.checkip(self.ip2Entry.get())
             val1 = self.ip2Entry.get()
-            if val1 == None or 'requires ipv4/ipv6':
-                return None
-            else:
-                return val1
+            return val1
         except Exception as invalid:
             self.ip2Entry.delete(0,END)
-            self.ip2Entry.insert(0,"requires ipv4/ipv6")
+            return ""
+            # self.ip2Entry.insert(0,"requires ipv4/ipv6")
     def getDescriptionEntry(self):
         description = self.descriptionEntry.get()
         return description
     def getServiceTagEntry(self):
-        servicetag = self.serviceTagEntry.get()
-        if servicetag == '':
-            return None
-        else:
-            return servicetag
+        try:
+            assert int(self.serviceTagEntry.get())
+            val1 = self.serviceTagEntry.get()
+            return val1
+        except Exception as invalid:
+            self.serviceTagEntry.delete(0,END)
+            return ""
     def serverAdd(self):
         if self.serverAddEntry.get() != "":
             server = self.serverAddEntry.get()
@@ -322,6 +344,7 @@ class InvForm:
     def getID(self):
         return self.serviceTagEntry.get()
     def WRITE(self,serviceTag,model,firmware,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description):
+
         try:
             self.__dbConnection.open("serverTable.db")
             self.__dbConnection.read(serviceTag)
