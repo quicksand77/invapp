@@ -36,9 +36,14 @@ class DataDB:
             r = (id,serverModel,firmwareVersion,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description)
             self.__cur.execute('INSERT INTO serverTable VALUES (?,?,?,?,?,?,?,?,?,?,?)', r)
             self.__conn.commit()
-        except:
+            print "insert try"
+        except Exception as e:
             self.update(id,serverModel,firmwareVersion,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description)
+            print "insert exception"
+            print e
+
     def update(self,id,serverModel,firmwareVersion,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description):
+        print "update"
         s1 = (serverModel, id)
         s2 = (firmwareVersion, id)
         s3 = (numHDD,id)
@@ -63,10 +68,13 @@ class DataDB:
     def read(self, id):
         t = (id,)
         for row in self.__cur.execute('SELECT * FROM serverTable WHERE ID = ?',t):
-		    return row[1]
+            # # print "here2"
+		    # print(row[1])
+            print "read"
     def currentConfig(self):
         for row in self.__cur.execute('SELECT * FROM serverTable'):
             print row
+            print "currentconfig"
     def close(self,id):
             if self.__wasOpened:
                 self.read(id)

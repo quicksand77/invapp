@@ -9,7 +9,7 @@ class InvForm:
         dbConnection = DataDB()
         self.__dbConnection = dbConnection
         try:
-            dbConnection.open("serverTable.db")
+            self.__dbConnection.open("serverTable.db")
         except Exception as e:
             print e
         self.validateIP = CheckIP()
@@ -30,7 +30,7 @@ class InvForm:
         self.b123 = Button(self.root,text = "showdata",command=self.readDatabase).grid(row=10,column=3)
         self.root.mainloop()
     def readDatabase(self):
-        self.read = self.__dbConnection.read("a")
+        self.read = self.__dbConnection.currentConfig()
     def drawEntries(self):
         self.informationFrame = Frame(bd=3,relief=RIDGE,padx=10)
         self.informationFrame.grid(row=1,column=0,rowspan=7,columnspan=2)
@@ -163,7 +163,7 @@ class InvForm:
         s10 = self.getIPaddress2()
         s11 = self.getDescriptionEntry()
         # print s1,",",s2,",",s3,",",s4,",",s5,",",s6,",",s7,",",s8,",",s9,",",s10,",",s11
-        if "" in (s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11):
+        if "" in (s1,s2,s3,s4,s5,s6,s7,s8,s9,s10):
             self.confirmApply()
         else:
             newTitle = "Server is %s." % self.serverString.get()
@@ -179,6 +179,7 @@ class InvForm:
         b2 = Button(self.applyBox,width=11,text="no",command=self.confirmApplyNo)
         b2.grid(row=1,column=0,sticky=E)
     def confirmApplyYes(self):
+        newTitle = "Server is %s." % self.serverString.get()
         ss1 = self.serviceTagEntry.get()
         ss2 = self.serverString.get()
         ss3 = self.firmwareString.get()
@@ -190,10 +191,22 @@ class InvForm:
         ss9 = self.ip1Entry.get()
         ss10 = self.ip2Entry.get()
         ss11 = self.descriptionEntry.get()
-        self.WRITE(ss1,ss2,ss3,ss4,ss5,ss6,ss7,ss8,ss9,ss10,ss11)
-        newTitle = "Server is %s." % self.serverString.get()
-        self.root.title(newTitle)
+        if ss1 == "":
+            self.noServiceTagError()
+            self.confirmApplyNo()
+        else:
+            self.WRITE(ss1,ss2,ss3,ss4,ss5,ss6,ss7,ss8,ss9,ss10,ss11)
+            self.root.title(newTitle)
         self.confirmApplyNo()
+    def noServiceTagError(self):
+        self.noServiceTagErrorBox = Toplevel()
+        self.noServiceTagErrorBox.geometry("%dx%d%+d%+d" % (150, 70, 250, 125))
+        self.noServiceTagErrorBox.title("Warning")
+        ask = Label(self.noServiceTagErrorBox,text="Cannot write to database\n without service tag.").grid(row=0,column=0)
+        b1 = Button(self.noServiceTagErrorBox,width=12,text="Okay",command=self.killNoServiceTagErrorBox)
+        b1.grid(row=1,column=0)
+    def killNoServiceTagErrorBox(self):
+        self.noServiceTagErrorBox.destroy()
     def confirmApplyNo(self):
         self.applyBox.destroy()
     def clearFunc(self):
