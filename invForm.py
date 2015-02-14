@@ -62,10 +62,9 @@ class InvForm:
         self.serverLabel = Label(self.informationFrame,text="Server Model:").grid(row=0,column=0)
         self.serverString = StringVar(self.root)
         self.serverString.set('Server Model')
-        self.serverModels = self.servermodellist.createList()
+        self.serverModels = self.servermodellist.getList()
         for server in self.serverModels:
-            self.modelChoices.insert(0,server)
-        print self.modelChoices
+            self.modelChoices.append(server)
         self.serverOption = OptionMenu(self.informationFrame,self.serverString,*self.modelChoices)
         self.serverOption.config(width=14)
         self.serverOption.grid(row=0, column=1, columnspan=2)
@@ -134,6 +133,7 @@ class InvForm:
     def closeFunc(self):
         self.servermodellist.addToFile(self.modelChoices)
         self.servermodellist.removeFromFile(self.poppedList)
+        print "popped list: ",self.poppedList
         print "Thank you for using the Inventory Application Form"
         self.root.destroy()
     def applyFunc(self):
