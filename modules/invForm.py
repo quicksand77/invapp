@@ -2,8 +2,8 @@ __author__ = 'quicksand77'
 import os
 from Tkinter import *
 from modules.valid_IP import *
-from DataDB import *
-from ServerModelList import *
+from modules.DataDB import *
+from modules.ServerModelList import *
 class InvForm:
     def __init__(self):
         self.startDB()
@@ -137,7 +137,6 @@ class InvForm:
         print "Thank you for using the Inventory Application Form"
         self.root.destroy()
     def applyFunc(self):
-
         ss1 = self.serviceTagEntry.get()
         ss2 = self.serverString.get()
         ss3 = self.firmwareString.get()
@@ -365,7 +364,6 @@ class InvForm:
         except Exception as e:
             print e
     def WRITE(self,serviceTag,model,firmware,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description):
-
         try:
             self.__dbConnection.open("serverTable.db")
             self.__dbConnection.read(serviceTag)
