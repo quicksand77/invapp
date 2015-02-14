@@ -76,4 +76,3 @@ class ServerModelList:
         else:
             self.path = "./modules/serverModelList.txt"
             self.isWindows = False
-ServerModelList()
