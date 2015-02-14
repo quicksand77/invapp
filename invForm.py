@@ -3,23 +3,20 @@ import os
 from Tkinter import *
 from modules.valid_IP import *
 from DataDB import *
+from ServerModelList import *
 class InvForm:
     def __init__(self):
-        #database
-        dbConnection = DataDB()
-        self.__dbConnection = dbConnection
-        try:
-            self.__dbConnection.open("serverTable.db")
-        except Exception as e:
-            print e
+        self.startDB()
         self.validateIP = CheckIP()
+        self.servermodellist = ServerModelList()
 
-        #
         self.root = Tk()
         self.root.title("Inventory Application Form")
         self.root.resizable(width=False, height=False)
+        # self.root.geometry("%dx%d%+d%+d" % (150, 70, 250, 125))
         self.modelChoices = []
         self.firmwareVersions = []
+        self.poppedList = []
         self.drawEntries()
         self.drawDescription()
         self.drawBottomButtons()
@@ -65,10 +62,10 @@ class InvForm:
         self.serverLabel = Label(self.informationFrame,text="Server Model:").grid(row=0,column=0)
         self.serverString = StringVar(self.root)
         self.serverString.set('Server Model')
-        self.serverModels = ['R610','R710','R720','R620','R630','R730XD']
+        self.serverModels = self.servermodellist.createList()
         for server in self.serverModels:
             self.modelChoices.insert(0,server)
-        # I think you can put all 3 lines on one line, more readable (JN)
+        print self.modelChoices
         self.serverOption = OptionMenu(self.informationFrame,self.serverString,*self.modelChoices)
         self.serverOption.config(width=14)
         self.serverOption.grid(row=0, column=1, columnspan=2)
@@ -135,6 +132,8 @@ class InvForm:
         self.firmwareDeleteButton = Button(self.firmwareDeleteFrame,text="Delete firmware",command=self.firmwareDelete,width=16,padx=2).grid(row=2,column=0)
         # self.redrawFirmwareList("a")
     def closeFunc(self):
+        self.servermodellist.addToFile(self.modelChoices)
+        self.servermodellist.removeFromFile(self.poppedList)
         print "Thank you for using the Inventory Application Form"
         self.root.destroy()
     def applyFunc(self):
@@ -291,11 +290,12 @@ class InvForm:
         return description
     def getServiceTagEntry(self):
         try:
-            assert int(self.serviceTagEntry.get())
+            assert self.serviceTagEntry.get() in ["0-9"] or ["a-zA-Z"]
             val1 = self.serviceTagEntry.get()
             return val1
         except Exception as invalid:
-            self.serviceTagEntry.delete(0,END)
+            # self.serviceTagEntry.delete(0,END)
+            print invalid
             return ""
     def serverAdd(self):
         if self.serverAddEntry.get() != "":
@@ -314,6 +314,7 @@ class InvForm:
     def redrawServerList(self,popped):
         if popped != "a":
             self.serverDeleteString.set('Deleted '+popped+'.')
+            self.poppedList.append(popped)
         self.serverDeleteOption = OptionMenu(self.serverDeleteFrame,self.serverDeleteString,*self.modelChoices)
         self.serverDeleteOption.config(width=14)
         self.serverDeleteOption.grid(row=1, column=0)
@@ -356,6 +357,13 @@ class InvForm:
         return self.serverString.get()
     def getID(self):
         return self.serviceTagEntry.get()
+    def startDB(self):
+        dbConnection = DataDB()
+        self.__dbConnection = dbConnection
+        try:
+            self.__dbConnection.open("serverTable.db")
+        except Exception as e:
+            print e
     def WRITE(self,serviceTag,model,firmware,numHDD,sizeHDD,mem,proc,dracIP,ip1,ip2,description):
 
         try:
